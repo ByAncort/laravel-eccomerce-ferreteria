@@ -25,6 +25,7 @@ class CustomerController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'run' => 'required|string|max:20|unique:customers',
             'email' => 'required|email|unique:customers',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
@@ -51,6 +52,7 @@ class CustomerController extends Controller
         
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'run' => 'required|string|max:20|unique:customers,run,' . $id,
             'email' => 'required|email|unique:customers,email,' . $id,
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
@@ -67,8 +69,8 @@ class CustomerController extends Controller
     public function destroy($id)
     {
         $customer = Customer::findOrFail($id);
-        $customer->delete();
+        $customer->update(['status' => $customer->status === 'active' ? 'inactive' : 'active']);
 
-        return redirect()->route('customers.index')->with('success', 'Cliente eliminado exitosamente.');
+        return redirect()->route('customers.index')->with('success', 'Estado del cliente actualizado exitosamente.');
     }
 }

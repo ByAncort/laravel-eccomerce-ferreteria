@@ -176,6 +176,21 @@
                                 <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
+                               <div>
+                            <label for="run" class="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">
+                                RUN *
+                            </label>
+                            <input type="text" 
+                                   name="run" 
+                                   id="run" 
+                                   required
+                                   value="{{ old('run') }}" 
+                                   placeholder="Ej. 12.345.678-9"
+                                   class="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 outline-none transition {{ $errors->has('run') ? 'border-red-500 dark:border-red-500' : '' }}">
+                            @error('run')
+                                <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
 
                         <div>
                             <label for="email" class="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">

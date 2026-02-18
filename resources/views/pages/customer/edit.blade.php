@@ -30,6 +30,16 @@
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
+                               <div>
+                        <label for="run" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">RUN *</label>
+                        <input type="text" name="run" id="run" required
+                               class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                               value="{{ old('run', $customer->run) }}">
+                        @error('run')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
 
                     <!-- Email -->
                     <div>
