@@ -11,6 +11,7 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\VendorController;
+use App\Http\Controllers\ItemsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,18 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::delete('/{id}', [VendorController::class, 'destroy'])->name('destroy');
     });
 
+Route::prefix('items')->name('items.')->group(function () {
+    Route::get('/', [ItemsController::class, 'index'])->name('index');
+    Route::get('/create', [ItemsController::class, 'create'])->name('create');
+    Route::post('/', [ItemsController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [ItemsController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [ItemsController::class, 'update'])->name('update');
+    Route::delete('/{id}', [ItemsController::class, 'destroy'])->name('destroy');
+    
+    // Otras rutas
+    Route::get('/low-stock', [ItemsController::class, 'lowStock'])->name('low-stock');
+    Route::get('/featured', [ItemsController::class, 'featured'])->name('featured');
+});
 
 
 

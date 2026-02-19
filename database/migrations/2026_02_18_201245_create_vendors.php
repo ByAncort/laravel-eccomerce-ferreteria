@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+            if (!Schema::hasTable('vendors')) {
         Schema::create('vendors', function (Blueprint $table) {
             $table->id();
             $table->string('run', 12)->unique();
@@ -26,6 +27,7 @@ return new class extends Migration
             $table->timestamp('last_order_date')->nullable();
             $table->timestamps();
         });
+            }
     }
 
     /**
