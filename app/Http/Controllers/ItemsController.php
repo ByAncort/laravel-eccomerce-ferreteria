@@ -96,7 +96,7 @@ public function index()
     public function destroy($id)
     {
         $item = Item::findOrFail($id);
-        $item->update(['status' => 'inactive']);
+        $item->delete();
 
         return redirect()->route('items.index')
             ->with('success', 'Producto eliminado exitosamente.');

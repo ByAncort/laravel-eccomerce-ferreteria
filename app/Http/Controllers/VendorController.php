@@ -61,7 +61,7 @@ class VendorController extends Controller
             'status' => 'required|in:active,inactive',
         ]);
 
-        $customer->update($validated);
+        $vendor->update($validated);
 
         return redirect()->route('vendors.index')->with('success', 'Proveedor actualizado exitosamente.');
     }
