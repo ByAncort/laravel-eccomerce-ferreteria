@@ -4,8 +4,8 @@
             
             {{-- Header --}}
             <div class="mb-6 sm:mb-8">
-                <h1 class=" text-3xl sm:text-4xl text-gray-900 dark:text-white">Clientes</h1>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Gestiona y registra los clientes de tu negocio</p>
+                <h1 class=" text-3xl sm:text-4xl text-gray-900 dark:text-white">Proveedores</h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Gestiona y registra los proveedores de tu negocio</p>
             </div>
 
             {{-- Alerts --}}
@@ -47,7 +47,7 @@
                             >
                         </div>
                         <span class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
-                            Total: <strong class="text-gray-900 dark:text-white">{{ $customers->total() }}</strong> clientes
+                            Total: <strong class="text-gray-900 dark:text-white">{{ $vendors->total() }}</strong> proveedores
                         </span>
                     </div>
 
@@ -63,26 +63,26 @@
                                 </tr>
                             </thead>
                             <tbody id="cr-tbody" class="divide-y divide-gray-100 dark:divide-gray-800">
-                                @forelse($customers as $customer)
+                                @forelse($vendors as $vendor)
                                     <tr class="cr-row hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
-                                        data-name="{{ strtolower($customer->name) }}"
-                                        data-email="{{ strtolower($customer->email) }}"
-                                        data-city="{{ strtolower($customer->city ?? '') }}">
+                                        data-name="{{ strtolower($vendor->name) }}"
+                                        data-email="{{ strtolower($vendor->email) }}"
+                                        data-city="{{ strtolower($vendor->city ?? '') }}">
                                         <td class="px-4 sm:px-6 py-4">
                                             <div class="flex items-center gap-3">
                                                 <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-200 to-blue-300 dark:from-blue-800 dark:to-blue-600 flex items-center justify-center font-bold text-xs text-blue-700 dark:text-blue-200 uppercase flex-shrink-0">
-                                                    {{ substr($customer->name, 0, 2) }}
+                                                    {{ substr($vendor->name, 0, 2) }}
                                                 </div>
                                                 <div>
-                                                    <div class="font-medium text-gray-900 dark:text-white">{{ $customer->name }}</div>
-                                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ $customer->email }}</div>
+                                                    <div class="font-medium text-gray-900 dark:text-white">{{ $vendor->name }}</div>
+                                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ $vendor->email }}</div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="px-4 sm:px-6 py-4 text-gray-600 dark:text-gray-300">{{ $customer->phone ?? '—' }}</td>
-                                        <td class="px-4 sm:px-6 py-4 text-gray-600 dark:text-gray-300">{{ $customer->city ?? '—' }}</td>
+                                        <td class="px-4 sm:px-6 py-4 text-gray-600 dark:text-gray-300">{{ $vendor->phone ?? '—' }}</td>
+                                        <td class="px-4 sm:px-6 py-4 text-gray-600 dark:text-gray-300">{{ $vendor->city ?? '—' }}</td>
                                         <td class="px-4 sm:px-6 py-4">
-                                            @if($customer->status === 'active')
+                                            @if($vendor->status === 'active')
                                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400">
                                                     <span class="w-1.5 h-1.5 rounded-full bg-green-600 dark:bg-green-400"></span>
                                                     Activo
@@ -96,7 +96,7 @@
                                         </td>
                                         <td class="px-4 sm:px-6 py-4">
                                             <div class="flex items-center gap-1.5">
-                                                <a href="{{ route('customers.edit', $customer->id) }}" 
+                                                <a href="{{ route('vendors.edit', $vendor->id) }}" 
                                                    class="w-8 h-8 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300 transition"
                                                    title="Editar">
                                                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -104,8 +104,8 @@
                                                         <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
                                                     </svg>
                                                 </a>
-                                                <form method="POST" action="{{ route('customers.destroy', $customer->id) }}"
-                                                      onsubmit="return confirm('¿Eliminar a {{ addslashes($customer->name) }}?')">
+                                                <form method="POST" action="{{ route('vendors.destroy', $vendor->id) }}"
+                                                      onsubmit="return confirm('¿Eliminar a {{ addslashes($vendor->name) }}?')">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" 
@@ -142,11 +142,11 @@
                         </div>
                     </div>
 
-                    @if($customers->hasPages())
+                    @if($vendors->hasPages())
                         <div class="px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500 dark:text-gray-400">
-                            <span>Página {{ $customers->currentPage() }} de {{ $customers->lastPage() }}</span>
+                            <span>Página {{ $vendors->currentPage() }} de {{ $vendors->lastPage() }}</span>
                             <div class="flex gap-1">
-                                {{ $customers->links() }}
+                                {{ $vendors->links() }}
                             </div>
                         </div>
                     @endif
@@ -155,10 +155,10 @@
                 {{-- ── Form Sidebar ── --}}
                 <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl sticky top-6">
                     <div class="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
-                        <h2 class=" text-xl text-gray-900 dark:text-white">Nuevo Cliente</h2>
+                        <h2 class=" text-xl text-gray-900 dark:text-white">Nuevo Proveedor</h2>
                     </div>
                     
-                    <form action="{{ route('customers.store') }}" method="POST" class="p-4 sm:p-6 space-y-4">
+                    <form action="{{ route('vendors.store') }}" method="POST" class="p-4 sm:p-6 space-y-4">
                         @csrf
 
                         <div>
