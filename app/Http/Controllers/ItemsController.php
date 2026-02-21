@@ -14,9 +14,10 @@ public function index()
     $vendors = Vendor::where('status', 'active')
             ->orderBy('name')
             ->get();
-    $items = Item::with('vendor')
-                ->orderBy('created_at', 'desc')
-                ->paginate(15);
+   $items = Item::with('vendor')
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
     
     return view('pages/item/item', compact('items', 'vendors'));
 }

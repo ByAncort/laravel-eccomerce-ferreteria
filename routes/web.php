@@ -12,6 +12,7 @@ use App\Http\Controllers\JobController;
 use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\ItemsController;
+use App\Http\Controllers\StockController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,7 +65,12 @@ Route::prefix('items')->name('items.')->group(function () {
     Route::get('/featured', [ItemsController::class, 'featured'])->name('featured');
 });
 
-
+Route::prefix('stock')->name('stock.')->group(function () {
+    Route::get('/',                              [StockController::class, 'index'])->name('index');
+    Route::get('/{itemId}/history',              [StockController::class, 'history'])->name('history');
+    Route::post('/{itemId}/move',                [StockController::class, 'move'])->name('move');
+    Route::delete('/movement/{movementId}',      [StockController::class, 'destroyMovement'])->name('movement.destroy');
+});
 
 
     Route::get('/ecommerce/orders', [OrderController::class, 'index'])->name('orders');
