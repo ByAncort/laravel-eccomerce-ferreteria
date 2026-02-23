@@ -48,6 +48,7 @@
                         Total: <strong class="text-gray-900 dark:text-white">{{ $vendors->total() }}</strong> proveedores
                     </span>
                 </div>
+                
 
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">

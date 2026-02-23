@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Item;
 use App\Models\Stock;
 use App\Models\StockMovement;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -13,34 +13,55 @@ class StockController extends Controller
 {
     public function index(Request $request)
     {
-        // Corregir la consulta - no necesitas hacer join manual si usas with()
-        $query = Stock::with('item')  // Esto ya hace el join por la relación
-            ->whereHas('item', function ($q) {
-                $q->where('status', 'active');  // Filtrar por items activos
-            });
+        $query = Stock::with('item');
 
-        if ($request->boolean('low_stock')) {
-            $query->whereColumn('quantity', '<=', 'min_stock');
+        if ($request->low_stock) {
+            $query->whereColumn('quantity', '<', 'min_stock');
         }
 
-        // Quitamos el dd() que detiene la ejecución
-        $stocks = $query->orderBy(
-            Item::select('name')
-                ->whereColumn('items.id', 'stock.item_id')
-                ->limit(1)
-        )->paginate(20);
+        $stocks = $query->paginate(20);
 
-        $totalItems = Stock::count();
-        $lowStockCount = Stock::whereColumn('quantity', '<=', 'min_stock')->count();
-        $totalUnits = Stock::sum('quantity');
-
-        return view('pages.stock.index', compact('stocks', 'totalItems', 'lowStockCount', 'totalUnits'));
+        return view('pages.stock.index', [
+            'stocks'       => $stocks,
+            'items'        => Item::orderBy('name')->get(),
+            'totalItems'   => Stock::count(),
+            'totalUnits'   => Stock::sum('quantity'),
+            'lowStockCount'=> Stock::whereColumn('quantity', '<', 'min_stock')->count(),
+        ]);
     }
 
-    /**
-     * Registrar movimiento manual.
-     * También persiste min_stock y location si vienen en el form (sección colapsable).
-     */
+    // Agregar stock a un ítem nuevo
+    public function store(Request $request)
+    {
+        $request->validate([
+            'item_id'  => 'required|exists:items,id',
+            'quantity' => 'required|integer|min:0',
+        ]);
+
+        DB::transaction(function () use ($request) {
+            $stock = Stock::firstOrCreate(
+                ['item_id' => $request->item_id],
+                ['quantity' => 0, 'min_stock' => 0]
+            );
+
+            $stock->quantity  += $request->quantity;
+            $stock->min_stock  = $request->min_stock ?? $stock->min_stock;
+            $stock->location   = $request->location ?? $stock->location;
+            $stock->save();
+
+            StockMovement::create([
+                'item_id'    => $request->item_id,
+                'type'       => 'entrada',
+                'quantity'   => $request->quantity,
+                'stock_after'=> $stock->quantity,
+                'reason'     => $request->reason ?? 'Carga inicial',
+                'source'     => 'manual',
+                'user_id'    => auth()->id(),
+            ]);
+        });
+
+        return redirect()->route('stock.index')->with('success', 'Stock agregado correctamente.');
+    }
     public function move(Request $request, int $itemId)
     {
         $request->validate([
@@ -88,22 +109,13 @@ class StockController extends Controller
 
         return redirect()->back()->with('success', 'Stock actualizado correctamente.');
     }
-
-    /**
-     * Eliminar un movimiento (todos son manuales en este módulo).
-     * NOTA: el stock NO se recalcula — el usuario debe hacer un ajuste si es necesario.
-     */
     public function destroyMovement(int $movementId)
     {
         StockMovement::findOrFail($movementId)->delete();
 
         return redirect()->back()->with('success', 'Movimiento eliminado. Verifica que el stock actual sea correcto.');
     }
-
-    /**
-     * Historial de movimientos de un producto.
-     */
-    public function history(int $itemId)
+     public function history(int $itemId)
     {
         $item      = Item::findOrFail($itemId);
         $stock     = Stock::where('item_id', $itemId)->first();
@@ -111,7 +123,45 @@ class StockController extends Controller
             ->where('item_id', $itemId)
             ->latest()
             ->paginate(20);
+    }
+    // Ajustar stock de un ítem existente
+    public function adjust(Request $request, $itemId)
+    {
+        $request->validate([
+            'type'     => 'required|in:entrada,salida,ajuste',
+            'quantity' => 'required|integer|min:0',
+        ]);
 
-        return view('pages.stock.history', compact('item', 'stock', 'movements'));
+        DB::transaction(function () use ($request, $itemId) {
+            $stock = Stock::where('item_id', $itemId)->firstOrFail();
+
+            $qty = $request->quantity;
+
+            if ($request->type === 'entrada') {
+                $stock->quantity += $qty;
+            } elseif ($request->type === 'salida') {
+                $stock->quantity = max(0, $stock->quantity - $qty);
+            } else { // ajuste
+                $stock->quantity = $qty;
+            }
+
+            if ($request->filled('min_stock')) $stock->min_stock = $request->min_stock;
+            if ($request->filled('location'))  $stock->location  = $request->location;
+            if ($request->filled('notes'))     $stock->notes     = $request->notes;
+
+            $stock->save();
+
+            StockMovement::create([
+                'item_id'    => $itemId,
+                'type'       => $request->type,
+                'quantity'   => $qty,
+                'stock_after'=> $stock->quantity,
+                'reason'     => $request->reason,
+                'source'     => 'manual',
+                'user_id'    => auth()->id(),
+            ]);
+        });
+
+        return redirect()->route('stock.index')->with('success', 'Stock ajustado correctamente.');
     }
 }

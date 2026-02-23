@@ -15,9 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('item_id')->constrained('items')->onDelete('cascade');
             $table->integer('quantity')->default(0);
-            $table->integer('min_stock')->default(0)->comment('Alerta de stock mínimo');
             $table->string('location')->nullable()->comment('Bodega o ubicación');
-            $table->string('notes')->nullable();
             $table->timestamps();
         });
 

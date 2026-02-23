@@ -67,6 +67,7 @@ Route::prefix('items')->name('items.')->group(function () {
 
 Route::prefix('stock')->name('stock.')->group(function () {
     Route::get('/',                              [StockController::class, 'index'])->name('index');
+    Route::post('/',                             [StockController::class, 'store'])->name('store');
     Route::get('/{itemId}/history',              [StockController::class, 'history'])->name('history');
     Route::post('/{itemId}/move',                [StockController::class, 'move'])->name('move');
     Route::delete('/movement/{movementId}',      [StockController::class, 'destroyMovement'])->name('movement.destroy');
