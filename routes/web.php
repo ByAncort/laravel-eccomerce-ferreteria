@@ -13,6 +13,7 @@ use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\QuotesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,6 +74,13 @@ Route::prefix('stock')->name('stock.')->group(function () {
     Route::delete('/movement/{movementId}',      [StockController::class, 'destroyMovement'])->name('movement.destroy');
 });
 
+Route::prefix('cotizaciones')->name('cotizaciones.')->group(function () {
+    Route::get('/', [QuotesController::class, 'index'])->name('index');
+    Route::post('/', [QuotesController::class, 'store'])->name('store');
+    Route::patch('/{id}/aprobar', [QuotesController::class, 'approve'])->name('approve');
+    Route::delete('/{id}', [QuoteController::class, 'destroy'])->name('destroy');
+
+});
 
     Route::get('/ecommerce/orders', [OrderController::class, 'index'])->name('orders');
     Route::get('/ecommerce/suppliers', [InvoiceController::class, 'index'])->name('suppliers');
